@@ -304,7 +304,6 @@ if __name__ == '__main__':
             scan(args[0])
         else:
             print(Fore.YELLOW+"Le fichier dump n'existe pas à cet emplacement")
-
     if "-h" in opts:
         print(Fore.LIGHTGREEN_EX)
         print(f"Usage: {sys.argv[0]} -c : suppression des fichiers modèles")
