@@ -2,7 +2,7 @@
 # Analyse et prépare les modèles
 import colorama
 from colorama import Fore, Back, Style
-
+import shutil
 colorama.init(autoreset=True)
 import os
 import sys
@@ -145,7 +145,7 @@ def parse(lines):
             is_table = False
             table_primary_key = identify(line, 'ALTER TABLE')
             print('_' * 40)
-            print(f' \U0001f511 {table_primary_key}')
+            print(f'🔑 {table_primary_key}')
 
             is_primary_key = True
 
@@ -296,11 +296,14 @@ def generateModels():
 if __name__ == '__main__':
     print(Fore.GREEN+'CodeGenModel Version 2.0')
     print(Fore.WHITE)
-
+    path_model="./Models"
     opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
     args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
     if args:
-        scan(args[0])
+        if os.path.exists(args[0]):
+            scan(args[0])
+        else:
+            print(Fore.YELLOW+"Le fichier dump n'existe pas à cet emplacement")
 
     if "-h" in opts:
         print(Fore.LIGHTGREEN_EX)
@@ -316,23 +319,23 @@ if __name__ == '__main__':
         print(f"Usage: {sys.argv[0]} --template : regénération du fichier template")
         exit(0)
 
-    elif "-c" in opts:
-        print('suppression des fichiers modèles')
+    elif ("-c" in opts) or ("--clear" in opts):
+        if os.path.exists(path_model):
+            shutil.rmtree(path_model)
+            print('suppression des fichiers modèles')
+        else:
+            print('Le répertoire n\'existe pas.')
 
-    elif "--clear" in opts:
-        print('suppression des fichiers modèles')
+    elif ("-m" in opts) or ("--model" in opts):
+        if os.path.exists(path_model):
+            print('Le répertoire modèle existe déjà')
+        else:
+            os.mkdir(path_model)
+            print('création du répertoire modèle')
 
-    elif "-m" in opts:
-        print('création du répertoire modèle')
-
-    elif "-model" in opts:
-        print('création du répertoire modèle')
-
-    elif "-l" in opts:
+    elif ("-l" in opts) or ("--log" in opts):
         print('création du fichier log')
 
-    elif "--log" in opts:
-        print('création du fichier log')
 
     elif "-t" in opts:
         print('regénération du template')
@@ -341,16 +344,14 @@ if __name__ == '__main__':
         print('regénération du template')
 
     elif "-g" in opts:
-        generateModels()
-        print("génération des fichier modèles")
+        if os.path.exists(args[0]):
+            generateModels()
+            print(Fore.LIGHTGREEN_EX+"Génération des fichier modèles ")
+        else:
+            print("Génération des fichiers modèles non aboutie !" )
     else:
         if not args:
-            print ("Aucun dump trouvé")
+            print (Fore.LIGHTRED_EX+"Aucun fichier dump trouvé !")
             print ("Usage codegenmodel <dump file> [c|g|l|m]")
     print('_' * 40)
-    exit(0)
 
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
